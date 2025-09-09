@@ -30,10 +30,10 @@ To get started with the CubeSat project codebase, follow these steps:
 
 ```bash
 # Clone the repository
-git clone https://github.com/UofG-Rocketry/CubeSat-Project.git
+git clone https://github.com/University-of-Guelph-Rocketry-Club/Cubesat.git
 
 # Navigate into the project directory
-cd CubeSat-Project
+cd Cubesat
 
 # Install dependencies
 pip install -r requirements.txt
