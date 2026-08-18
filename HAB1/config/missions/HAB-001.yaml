@@ -14,7 +14,9 @@ controllers:
     platform: STM32
     family: TBD
     language: C11
-    execution_model: bare-metal cooperative superloop
+    operating_system: FreeRTOS
+    freertos_version: TBD
+    execution_model: FreeRTOS task-based firmware
   companion:
     role: camera_data_logger
     platform: Raspberry Pi Zero

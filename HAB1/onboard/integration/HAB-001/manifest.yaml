@@ -3,7 +3,9 @@ mission_id: HAB-001
 stm32:
   application: onboard/stm32/apps/flight
   language: C11
-  execution_model: bare-metal cooperative superloop
+  operating_system: FreeRTOS
+  freertos_version: TBD
+  execution_model: FreeRTOS task-based firmware
   state_machine: onboard/stm32/modules/state_machine
   family: TBD
   board: TBD

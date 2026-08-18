@@ -13,7 +13,7 @@ STM32 Flight Controller
 
 ## Responsibilities
 
-- `onboard/stm32/apps/flight/` is the final bare-metal C flight application and explicit state-machine superloop.
+- `onboard/stm32/apps/flight/` is the final C/FreeRTOS flight application.
 - `onboard/stm32/apps/bringup/` gives each STM32 subsystem a standalone student application.
 - `onboard/stm32/modules/` contains reusable drivers and services linked by both application types.
 - `onboard/pi-zero/` contains standalone bring-up workspaces and the final camera/data-logger application.
@@ -30,10 +30,10 @@ STM32 Flight Controller
 
 ## Boundaries
 
-STM32 code should be deterministic C, readable, conservative with memory, and organized as a cooperative superloop. Device-specific details belong behind small interfaces or measurement functions. Interrupt handlers should remain short. The Pi and ground software may use richer Linux libraries.
+STM32 code should be deterministic C, readable, conservative with memory, and organized as statically allocated FreeRTOS tasks. Device-specific details belong behind small interfaces or measurement functions. Tasks communicate through bounded queues, notifications, or event groups; interrupt handlers remain short. The Pi and ground software may use richer Linux libraries.
 
 The STM32 must continue sensing, state handling, health monitoring, and primary telemetry if the Pi fails. The Pi preserves received records and camera data but is not a flight-control dependency.
 
 MissileWorks RRC-series altimeters and Eggtimer/Eggfinder equipment are independent COTS avionics and tracking/recovery systems. The payload computer does not depend on them to boot, collect scientific data, or log onboard data.
 
-The first implementation does not require a microservice architecture, dependency-injection framework, RTOS, binary protocol, or graphical dashboard. Those can be added later only when a mission need justifies them.
+FreeRTOS is selected for the STM32, but the project does not require microservices, dependency-injection frameworks, an elaborate abstraction layer, a binary protocol, or a graphical dashboard. Additional complexity should be added only when a mission need justifies it.

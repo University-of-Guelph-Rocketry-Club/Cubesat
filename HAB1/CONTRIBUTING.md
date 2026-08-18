@@ -29,7 +29,10 @@ If hardware is involved, include the board or device model, wiring changes, and 
 
 - Prefer readable code over clever code.
 - Put units in names such as `pressure_pa` and `mission_time_ms`.
-- Keep STM32 flight code deterministic, bare-metal C, and free of unnecessary dynamic allocation.
+- Keep STM32 flight code deterministic C using the approved FreeRTOS task architecture.
+- Prefer static task, queue, and event-group allocation for flight builds.
+- Keep interrupt handlers short; use task notifications or queues to hand work to tasks.
+- Give the mission state machine one owning task instead of mutating it from multiple tasks.
 - Put reusable subsystem code in `onboard/*/modules/`; keep bring-up `main` files small.
 - Do not copy a subsystem implementation into the final integration application.
 - Preserve raw measurements alongside derived values where practical.

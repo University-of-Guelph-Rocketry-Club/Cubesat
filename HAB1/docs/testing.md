@@ -22,10 +22,10 @@ flight
 
 ## What each stage checks
 
-1. **Unit test:** calculations, parsing, telemetry validity, state transitions, and error handling without hardware.
+1. **Unit test:** calculations, parsing, telemetry validity, state transitions, and task-independent error handling without hardware.
 2. **Sensor bench test:** one selected sensor at a time, including expected ranges and disconnected/failure behavior.
 3. **Integrated payload test:** STM32 sensing/state handling, record construction, Pi logging/camera operation, telemetry, and health status together.
-4. **Long-duration test:** storage growth, power behavior, timing, watchdog behavior, and recovery after transient errors.
+4. **Long-duration test:** storage growth, task timing, stack high-water marks, queue pressure, power behavior, watchdog gating, and recovery after transient errors.
 5. **Cold/environment test:** startup, sensor readings, storage, and power behavior under expected environmental conditions.
 6. **Radio range test:** packet reception, loss behavior, decoding, and ground logging at representative distances while Pi logging remains independent.
 7. **Full mission rehearsal:** pre-flight checklist through recovery and post-flight analysis using the intended configuration.

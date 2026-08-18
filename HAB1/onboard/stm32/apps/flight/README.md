@@ -1,5 +1,5 @@
 # Integrated STM32 flight application
 
-This is the final STM32 application for HAB-001. It owns initialization order and the cooperative superloop while reusable behavior remains in `modules/`.
+This is the final STM32 FreeRTOS application for HAB-001. It owns initialization, creation of statically allocated tasks, and scheduler startup while reusable behavior remains in `modules/`.
 
-The current `main.c` is a compilable C skeleton. It does not access unselected hardware or invent state-detection thresholds.
+`main.c` starts FreeRTOS and delegates task construction to `flight_tasks.c`. The task scaffold does not access unselected hardware or invent state-detection thresholds. A target build requires an approved STM32 port and FreeRTOS headers.

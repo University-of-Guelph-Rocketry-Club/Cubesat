@@ -34,7 +34,7 @@ The STM32 architecture and Pi Zero role are selected, but exact models and toolc
 4. select the toolchain and library versions; and
 5. add exact build, flash, run, and observation commands to the workspace README.
 
-Until those decisions are made, STM32 bring-up source is an intentionally hardware-neutral C skeleton. It does not generate fake measurements.
+Until those decisions are made, STM32 bring-up source is a hardware-neutral FreeRTOS task skeleton. It does not generate fake measurements.
 
 ## 4. Make a small change
 

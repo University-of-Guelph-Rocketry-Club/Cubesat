@@ -2,7 +2,7 @@
 
 All software carried by the balloon lives here.
 
-- `stm32/` contains the bare-metal C firmware for the primary flight controller.
+- `stm32/` contains C and FreeRTOS firmware for the primary flight controller.
 - `pi-zero/` contains Linux userspace software for camera capture and data logging.
 - `integration/` defines how the two computers are assembled and tested for a mission.
 

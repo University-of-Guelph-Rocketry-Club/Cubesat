@@ -1,6 +1,6 @@
 # STM32 tests
 
-Host tests should cover state transitions, conversions, framing, parsing, and validity behavior. Target tests should cover board startup, buses, watchdog, timing, and each selected hardware module.
+Host tests should cover state transitions, conversions, framing, parsing, and validity behavior. Target tests should cover board startup, buses, FreeRTOS task timing, stack high-water marks, queue pressure, priority behavior, watchdog gating, and each selected hardware module.
 
 The initial state-machine test can be built and run on a development computer:
 

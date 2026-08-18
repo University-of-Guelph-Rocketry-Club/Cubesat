@@ -2,7 +2,7 @@
 
 Software for the University of Guelph Rocketry Club's student-built High-Altitude Balloon project.
 
-The HAB is one team vehicle with multiple student-owned subsystems. HAB-001 uses an STM32 as the primary bare-metal C flight controller and a Raspberry Pi Zero with a Pi Camera as an onboard data logger. Environmental sensors, GPS, telemetry, and power monitoring connect to the STM32 as their hardware is selected.
+The HAB is one team vehicle with multiple student-owned subsystems. HAB-001 uses an STM32 running C and FreeRTOS as the primary flight controller, plus a Raspberry Pi Zero with a Pi Camera as an onboard data logger. Environmental sensors, GPS, telemetry, and power monitoring connect to the STM32 as their hardware is selected.
 
 ## Current status
 
@@ -41,6 +41,7 @@ The bring-up applications give each subsystem a standalone student workspace. Re
 
 - [Architecture](docs/architecture.md)
 - [Flight software lifecycle](docs/flight-software.md)
+- [FreeRTOS architecture](docs/rtos-architecture.md)
 - [Telemetry format](docs/telemetry.md)
 - [Testing progression](docs/testing.md)
 - [Mission flow](docs/mission-flow.md)

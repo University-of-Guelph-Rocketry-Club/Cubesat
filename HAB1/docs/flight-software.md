@@ -18,7 +18,7 @@ LANDED
 
 ## Current implementation
 
-[`onboard/stm32/apps/flight/main.c`](../onboard/stm32/apps/flight/main.c) is a readable C superloop skeleton. The reusable state sequencing is implemented in [`state_machine.c`](../onboard/stm32/modules/state_machine/state_machine.c). Hardware access, detector thresholds, radio transport, and Pi transport remain explicit TODOs until their hardware and tests are approved.
+[`onboard/stm32/apps/flight/main.c`](../onboard/stm32/apps/flight/main.c) initializes the board, creates the FreeRTOS flight tasks, and starts the scheduler. [`flight_tasks.c`](../onboard/stm32/apps/flight/flight_tasks.c) defines the initial task boundaries. Reusable state sequencing remains in [`state_machine.c`](../onboard/stm32/modules/state_machine/state_machine.c). Hardware access, detector thresholds, RTOS resource sizing, radio transport, and Pi transport remain explicit TODOs until their hardware and tests are approved.
 
 ## Planned behavior
 
@@ -30,6 +30,6 @@ LANDED
 
 State sequencing is present, but launch, descent, and landing detectors are not implemented. The initial application must not claim those events from invented thresholds.
 
-## Cooperative loop
+## FreeRTOS execution
 
-The flight application repeatedly polls bounded subsystem APIs, collects detector and health inputs, steps the state machine, builds telemetry, services the Pi/radio outputs, and services the watchdog. Subsystem modules must not hide their own infinite loops.
+The flight application separates sensor acquisition, GPS, mission-state ownership, telemetry, Pi transport, and system-health/watchdog work into tasks. Drivers expose bounded calls and do not create private tasks. Queues and notifications carry data or wake tasks; event groups may represent readiness and heartbeat state. See [rtos-architecture.md](rtos-architecture.md).
