@@ -1,0 +1,24 @@
+mission_id: HAB-001
+
+stm32:
+  application: onboard/stm32/apps/flight
+  language: C11
+  execution_model: bare-metal cooperative superloop
+  state_machine: onboard/stm32/modules/state_machine
+  family: TBD
+  board: TBD
+  vendor_layer: TBD
+
+pi_zero:
+  application: onboard/pi-zero/apps/data_logger
+  operating_system: Raspberry Pi OS
+  model: TBD
+  camera_model: TBD
+  application_language: TBD
+
+stm32_pi_link:
+  protocol: shared/protocols/stm32-pi
+  protocol_version: 1
+  physical_interface: TBD
+
+mission_configuration: config/missions/HAB-001.yaml

@@ -1,0 +1,5 @@
+# Synthetic HAB-001-shaped sample; GPS and humidity are unavailable in these rows.
+packet_version,sequence_number,mission_time_ms,latitude_deg,longitude_deg,gps_altitude_m,barometric_altitude_m,pressure_pa,temperature_c,humidity_percent,vertical_speed_mps,battery_voltage_v,gps_fix_quality,gps_satellite_count,valid_fields,system_status
+1,0,0,,,,100.0,101325.0,20.0,,,7.80,0,0,0x270,0x23
+1,1,1000,,,,110.0,101210.0,19.8,,,7.79,0,0,0x270,0x23
+1,2,2000,,,,120.0,101090.0,19.6,,,7.78,0,0,0x270,0x23

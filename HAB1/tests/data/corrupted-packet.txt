@@ -1,0 +1,3 @@
+# Intentionally unsupported packet version for decoder error handling.
+packet_version=99
+sequence_number=42

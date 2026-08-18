@@ -1,0 +1,50 @@
+# HAB-001 reference configuration.
+# This file is not parsed by the placeholder firmware yet.
+
+mission_id: HAB-001
+description: Initial University of Guelph Rocketry Club high-altitude balloon mission
+
+mode:
+  debug: true
+  flight: false
+
+controllers:
+  primary:
+    role: flight_controller
+    platform: STM32
+    family: TBD
+    language: C11
+    execution_model: bare-metal cooperative superloop
+  companion:
+    role: camera_data_logger
+    platform: Raspberry Pi Zero
+    model: TBD
+    operating_system: Raspberry Pi OS
+    camera_model: TBD
+
+sample_intervals_ms:
+  sensors: 1000
+  gps: 1000
+  logging: 1000
+  telemetry: 5000
+
+enabled_sensors:
+  barometer: false       # Enable after a model is selected and tested.
+  temperature: false     # Enable after a model is selected and tested.
+  humidity: false        # Optional; no hardware is assumed yet.
+  battery_monitor: false
+
+tracking:
+  gps: false             # Enable after the GPS and UART are selected.
+  radio_model: TBD
+
+stm32_pi_link:
+  enabled: false
+  physical_interface: TBD
+  protocol_version: 1
+
+thresholds:
+  low_battery_voltage_v: TBD
+  maximum_sensor_age_ms: TBD
+
+# Pin assignments belong in hardware/pinouts/ and hardware/wiring/.

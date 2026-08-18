@@ -1,0 +1,31 @@
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Python environments, caches, and test output
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Generic build products and firmware artifacts
+build/
+dist/
+.pio/
+*.elf
+*.hex
+*.bin
+*.map
+
+# Generated analysis output
+data/generated/
+data/raw/
+data/recordings/
+tools/**/output/
+
+# Keep small checked-in fixtures under data/sample/ and tests/data/.
