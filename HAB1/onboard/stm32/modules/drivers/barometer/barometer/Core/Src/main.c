@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "bmp280.h"
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -45,7 +47,11 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+bmp280_t bmp280;
 
+float pressure_pa;
+float temperature_c;
+/* USER CODE END PV */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,19 +100,37 @@ int main(void)
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+    // tell the BMP280 driver to use SPI1
+    bmp280.spi = &hspi1;
 
+    // Verify and configure the BMP280.
+    if (bmp280_init(&bmp280) != HAL_OK)
+    {
+        Error_Handler();
+    }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  while (1){
     /* USER CODE END WHILE */
+    if (bmp280_read_pressure(&bmp280, &pressure_pa, &temperature_c) != HAL_OK){
+                Error_Handler();
+            }
 
-    /* USER CODE BEGIN 3 */
+    // USER CODE BEGIN 3 
+    if (bmp280_read_pressure(&bmp280, &pressure_pa, &temperature_c) == HAL_OK){
+        printf("Pressure: %.2f Pa | Temperature: %.2f C\r\n", pressure_pa, temperature_c);
+    }
+    else{
+        printf("BMP280 read failed\r\n");
+    }
+
+    HAL_Delay(500);
+}
   }
   /* USER CODE END 3 */
-}
+
 
 /**
   * @brief System Clock Configuration
