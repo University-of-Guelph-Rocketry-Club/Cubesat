@@ -1,5 +1,9 @@
 # Telemetry format
 
+The proposed independent STM32 SD logger consumes this logical record. See
+[URC-43 SD logging](sd-logging.md) for its proposed queue, file, and durability
+contract and the remaining data-coverage decisions.
+
 The canonical C-compatible logical record is [`shared/telemetry/telemetry_record.h`](../shared/telemetry/telemetry_record.h). It is shared by the STM32, Pi Zero logger, and ground software. The current logical packet version is `1`.
 
 Every record includes `packet_version`, `sequence_number`, `mission_time_ms`, `valid_fields`, and `system_status`. A field is meaningful only when its validity bit is set. Unknown packet versions must be rejected visibly; decoders must not silently reinterpret fields.

@@ -5,5 +5,7 @@ Modules contain code shared by standalone bring-up applications and the integrat
 - `drivers/` owns device and transport boundaries.
 - `state_machine/` owns mission states and transition sequencing.
 - `system_health/` owns consolidated subsystem status policy.
+- `sd_logger/` owns portable CSV serialization, session files, and sync policy;
+  storage callbacks and application task/queue integration are separate.
 
 A module should expose a small C API, explicit units, bounded execution, and visible error/status results. Avoid hidden tasks and infinite loops inside drivers; application code owns task creation. Prefer static FreeRTOS allocation in flight software.

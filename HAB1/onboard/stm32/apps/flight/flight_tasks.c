@@ -10,13 +10,37 @@
 #include "../../modules/state_machine/state_machine.h"
 #include "../../platform/board/board.h"
 
+/* Enable only after the board supplies board_sd_storage() and reserves a bus. */
+#ifndef HAB_ENABLE_SD_LOGGING
+#define HAB_ENABLE_SD_LOGGING 0
+#endif
+#if HAB_ENABLE_SD_LOGGING
+#include "sd_logging.h"
+extern sd_log_storage_t board_sd_storage(void);
+static StaticTask_t logging_task_control;
+static StackType_t logging_task_stack[configMINIMAL_STACK_SIZE + 1024U];
+static void logging_task(void *context)
+{
+    (void)context;
+    sd_log_result_t result = hab_sd_start();
+    for (;;) {
+        if (result == SD_LOG_OK || result == SD_LOG_INVALID) {
+            result = hab_sd_service();
+        }
+        /* At most one queued record per 10ms cycle: provisional 100 Hz service.
+         * Measure callback times and size queues/priorities on the flight board. */
+        vTaskDelay(pdMS_TO_TICKS(10U) ? pdMS_TO_TICKS(10U) : 1U);
+    }
+}
+#endif
+
 /* Provisional values: measure and review on the selected STM32 target. */
-#define SENSOR_TASK_STACK_WORDS    (configMINIMAL_STACK_SIZE + 128U)
-#define GPS_TASK_STACK_WORDS       (configMINIMAL_STACK_SIZE + 128U)
-#define STATE_TASK_STACK_WORDS     (configMINIMAL_STACK_SIZE + 128U)
+#define SENSOR_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
+#define GPS_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
+#define STATE_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
 #define TELEMETRY_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
-#define PI_LINK_TASK_STACK_WORDS   (configMINIMAL_STACK_SIZE + 128U)
-#define HEALTH_TASK_STACK_WORDS    (configMINIMAL_STACK_SIZE + 128U)
+#define PI_LINK_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
+#define HEALTH_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE + 128U)
 
 static StaticTask_t sensor_task_control;
 static StaticTask_t gps_task_control;
@@ -106,6 +130,14 @@ static void health_task(void *context)
 
     for (;;) {
         bool required_tasks_healthy = false;
+#if HAB_ENABLE_SD_LOGGING
+        hab_sd_status_t logging;
+        hab_sd_status(&logging);
+        /* Available for readiness/health policy: dropped, invalid, storage
+         * fault, queue high-water and missed_durability_deadlines. That policy
+         * remains team-owned; do not fabricate watchdog readiness here. */
+        (void)logging;
+#endif
 
         /* TODO: derive this value from required task heartbeat/event bits. */
         if (required_tasks_healthy) {
@@ -115,71 +147,56 @@ static void health_task(void *context)
     }
 }
 
+BaseType_t flight_log_record(const hab_telemetry_record_t *record)
+{
+#if HAB_ENABLE_SD_LOGGING
+    return hab_sd_submit(record) == SD_LOG_OK ? pdPASS : pdFAIL;
+#else
+    (void)record;
+    return pdFAIL;
+#endif
+}
+
 BaseType_t flight_tasks_create(void)
 {
-    if (xTaskCreateStatic(
-            sensor_task,
-            "sensors",
-            SENSOR_TASK_STACK_WORDS,
-            NULL,
-            tskIDLE_PRIORITY + 2U,
-            sensor_task_stack,
-            &sensor_task_control) == NULL) {
+#if HAB_ENABLE_SD_LOGGING
+    sd_log_storage_t storage = board_sd_storage();
+    if (hab_sd_configure(&storage) != pdPASS ||
+        xTaskCreateStatic(logging_task, "sd_log", configMINIMAL_STACK_SIZE + 1024U, NULL,
+                          tskIDLE_PRIORITY + 1U, logging_task_stack,
+                          &logging_task_control) == NULL) {
+        return pdFAIL;
+    }
+#endif
+    if (xTaskCreateStatic(sensor_task, "sensors", SENSOR_TASK_STACK_WORDS, NULL,
+                          tskIDLE_PRIORITY + 2U, sensor_task_stack, &sensor_task_control) == NULL) {
         return pdFAIL;
     }
 
-    if (xTaskCreateStatic(
-            gps_task,
-            "gps",
-            GPS_TASK_STACK_WORDS,
-            NULL,
-            tskIDLE_PRIORITY + 2U,
-            gps_task_stack,
-            &gps_task_control) == NULL) {
+    if (xTaskCreateStatic(gps_task, "gps", GPS_TASK_STACK_WORDS, NULL, tskIDLE_PRIORITY + 2U,
+                          gps_task_stack, &gps_task_control) == NULL) {
         return pdFAIL;
     }
 
-    if (xTaskCreateStatic(
-            state_task,
-            "state",
-            STATE_TASK_STACK_WORDS,
-            NULL,
-            tskIDLE_PRIORITY + 3U,
-            state_task_stack,
-            &state_task_control) == NULL) {
+    if (xTaskCreateStatic(state_task, "state", STATE_TASK_STACK_WORDS, NULL, tskIDLE_PRIORITY + 3U,
+                          state_task_stack, &state_task_control) == NULL) {
         return pdFAIL;
     }
 
-    if (xTaskCreateStatic(
-            telemetry_task,
-            "telemetry",
-            TELEMETRY_TASK_STACK_WORDS,
-            NULL,
-            tskIDLE_PRIORITY + 1U,
-            telemetry_task_stack,
-            &telemetry_task_control) == NULL) {
+    if (xTaskCreateStatic(telemetry_task, "telemetry", TELEMETRY_TASK_STACK_WORDS, NULL,
+                          tskIDLE_PRIORITY + 1U, telemetry_task_stack,
+                          &telemetry_task_control) == NULL) {
         return pdFAIL;
     }
 
-    if (xTaskCreateStatic(
-            pi_link_task,
-            "pi-link",
-            PI_LINK_TASK_STACK_WORDS,
-            NULL,
-            tskIDLE_PRIORITY + 1U,
-            pi_link_task_stack,
-            &pi_link_task_control) == NULL) {
+    if (xTaskCreateStatic(pi_link_task, "pi-link", PI_LINK_TASK_STACK_WORDS, NULL,
+                          tskIDLE_PRIORITY + 1U, pi_link_task_stack,
+                          &pi_link_task_control) == NULL) {
         return pdFAIL;
     }
 
-    if (xTaskCreateStatic(
-            health_task,
-            "health",
-            HEALTH_TASK_STACK_WORDS,
-            NULL,
-            tskIDLE_PRIORITY + 3U,
-            health_task_stack,
-            &health_task_control) == NULL) {
+    if (xTaskCreateStatic(health_task, "health", HEALTH_TASK_STACK_WORDS, NULL,
+                          tskIDLE_PRIORITY + 3U, health_task_stack, &health_task_control) == NULL) {
         return pdFAIL;
     }
 
